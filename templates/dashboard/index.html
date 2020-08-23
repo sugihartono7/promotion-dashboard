@@ -1,0 +1,34 @@
+{% extends 'layout_plot.html' %} 
+
+{% block content %}
+<style>
+    .barGraph {
+        padding:0px;
+        margin:0px;
+    }
+</style>
+
+<div class="col-md-12">
+    <h2>Welcome</h2>
+    <div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-body" style="background-color: #fff;">
+                    <h3>Pre Promo</h3>
+                    Periode Pre Promo adalah H-14 sebelum periode Promo berlangsung.<br><br>
+                    <h3>Promo Date</h3>
+                    Promo Date adalah periode promo, dapat ditarik dari datepicker disamping<br><br>
+                    <h3>Sample Data</h3>
+                    Sementara Data yang dapat ditarik mulai dari tanggal 1 Juli 2020<br>
+                    Dan akan diupdate secara berkala.<br>
+                    <br>
+                    Data tahun lalu adalah data total (tidak digroup berdasarkan jenis promosi) <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block script %}
+
+{% endblock script %}

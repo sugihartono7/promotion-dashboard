@@ -1,0 +1,83 @@
+{% extends 'back/layout.html' %} 
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Voucer New Member </h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Voucer New Member </li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-body">
+					<div class="btn-group">
+						<a class="btn btn-success" href="{{ url_for('voucer_member.create') }}"><i class="fa fa-plus fa-fw"></i> Create</a>
+					</div>
+					<br><br>
+					<div class="table-responsive">
+						<table id="datatable" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Customer Name</th>
+									<th>Name</th>
+									<th>Voucer Code</th>
+									<th>Percent Disc</th>
+									<th>Max Amount</th>
+									<th>Start Date</th>
+									<th>End Date</th>
+									<th>Is Active</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for voucer_member in voucer_members %}
+								<tr>
+									<td align="center">
+										<a href="{{ url_for('voucer_member.update', id=voucer_member.id) }}" title="Edit"><i class="fa fa-pencil"></i></a>
+									</td>
+									<td>{{ voucer_member['customer_name'] }}</td>
+									<td>{{ voucer_member['name'] }}</td>
+									<td>{{ voucer_member['voucer_code'] }}</td>
+									<td>{{ "{:,.0f}".format(voucer_member['percent_discount']) }}%</td>
+									<td>{{ "{:,.0f}".format(voucer_member['max_amount']) }}</td>
+									<td>{{ voucer_member['start_date'] }}</td>
+									<td>{{ voucer_member['end_date'] }}</td>
+									<td>
+										{% if voucer_member['is_active']==1 %}
+											<small class="label bg-red">Yes</small>
+										{% elif voucer_member['is_active']==0 %}
+											<small class="label bg-green">No</small>
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#datatable').DataTable({
+				
+			})
+		});
+	</script>
+{% endblock script %}

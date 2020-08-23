@@ -1,0 +1,4 @@
+beda month ambil date
+
+index show data
+bar-bar kecil

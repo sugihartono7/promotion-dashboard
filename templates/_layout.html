@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html style="height: auto; min-height: 100%;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="http://127.0.0.1:5000/static/favicon.ico" type="image/x-icon">
+
+    <title>Yo-Promo</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='ionicons/css/ionicons.min.css') }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='icheck/flat/blue.css') }}">
+
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skins/_all-skins.min.css') }}">
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='sweetalert/sweetalert.css') }}" type="text/css" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='select2/css/select2.min.css') }}" type="text/css" media="all">
+    <link rel="stylesheet" href="{{ url_for('static', filename='daterangepicker/daterangepicker.css') }}" type="text/css" media="all">
+
+    <style>
+        .submenu-kiri{
+            margin-left:20px;
+        }
+    </style>
+
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/adminlte.min.js') }}"></script>
+
+    <!-- Specific JS goes HERE -->
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/pages/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='sweetalert/sweetalert.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='select2/js/select2.min.js') }}"></script>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='daterangepicker/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='daterangepicker/daterangepicker.js') }}"></script>
+    
+    <script>
+        function formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+                const negativeSign = amount < 0 ? "-" : "";
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+        function toDmy(ymd_date) {
+            var d = new Date(ymd_date);
+            var curr_date = d.getDate();
+                curr_date = curr_date < 10 ? '0' + curr_date : '' + curr_date;
+            var curr_month = d.getMonth()+1;
+                curr_month = curr_month < 10 ? '0' + curr_month : '' + curr_month;
+            var curr_year = d.getFullYear();
+            return curr_date + "-" + curr_month + "-" + curr_year;
+        }
+
+        $(document).ready(function(){
+            $('#pre_date').daterangepicker();
+            $('#promo_date').daterangepicker({
+                locale: {
+                    format: 'DD-MM-YYYY',
+                    cancelLabel: 'Clear'
+                }
+            });
+            $('#after_date').daterangepicker();
+
+            $("#division").on('change', function(){
+                var division = $(this).val();
+                $.ajax({
+                    url: "{{ url_for('dashboard.getCategoryByDivision') }}",
+                    dataType: "json",
+                    data: {
+                        "division" : division
+                    },
+                    error: function (request, error) {
+                        console.log(error);
+                    },
+                }).done(function (data) {
+                    if (data != '0'){
+                        var option = "<option value='all'>All Category</option>";
+                        $.each(data, function(i, item) {
+                            option += "<option value='"+data[i].cat+"'>"+data[i].catdesc+"</option>";
+                        });
+                        $("#category").html(option);
+                    }
+                });
+            });
+
+            $("#directorate").on('change', function(){
+                var directorate = $(this).val();
+                $.ajax({
+                    url: "{{ url_for('dashboard.getDivisionByDirectorate') }}",
+                    dataType: "json",
+                    data: {
+                        "directorate" : directorate
+                    },
+                    error: function (request, error) {
+                        console.log(error);
+                    },
+                }).done(function (data) {
+                    if (data != '0'){
+                        var option = "<option value='all'>All Division</option>";
+                        $.each(data, function(i, item) {
+                            option += "<option value='"+data[i].div+"'>"+data[i].divdesc+"</option>";
+                        });
+                        $("#division").html(option);
+                    }
+                });
+            });
+
+        });
+    </script>
+</head>
+
+<body class="skin-blue sidebar-mini wysihtml5-supported" style="height: auto; min-height: 100%;">
+    <div class="wrapper" style="height: auto; min-height: 100%;">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="{{ url_for('dashboard.index') }}" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><b>Y</b>P</span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>Yo-Promo</b></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="{{ url_for('static', filename='img/user.png') }}" class="user-image" alt="User Image">
+                                <span class="hidden-xs">
+                                    {{ session['username'] }}
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header">
+                                    <img src="{{ url_for('static', filename='img/user.png') }}" class="img-circle">
+                                    <p>{{ session['username'] }}
+                                        <small>{{ session['email'] }}</small>
+                                    </p>
+                                </li>
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="http://127.0.0.1:5000/page-profile" class="btn btn-default btn-flat">Profile</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="{{ url_for('auth.logout') }}" class="btn btn-default btn-flat">Log out</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar" style="height: auto;">
+                <ul class="sidebar-menu tree" data-widget="tree">
+                    <form id="frm" class="sidebar-form" style="border:0px;" method="POST" action="{{ url_for('dashboard.apply') }}" >
+                        <li>
+                            <div class="form-group">
+                                <label style="color:white">Store</label>
+                                <select name="store" id="store" class="form-control" required>
+                                    {% for store in stores %}
+                                        <option value="{{ store['store_code'] }}">{{ store['initial'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="color:white">Promo Date</label>
+                                <input type="text" class="form-control" id="promo_date" name="promo_date" style="background-color: white;"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="color:white">Directorate</label>
+                                <select name="directorate" id="directorate" class="form-control" required>
+                                    <option value='all'>All Directorate</option>
+                                    {% for i, directorate in directorates.iterrows() %}
+                                        <option value="{{ directorate['dirdesc'] }}">{{ directorate['dirdesc'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="color:white">Division</label>
+                                <select name="division" id="division" class="form-control" required>
+                                    <option value='all'>All Division</option>
+                                    {# for i, division in divisions.iterrows() #}
+                                        <!-- <option value="{# division['div'] #}">{# division['divdesc'] #}</option> -->
+                                    {# endfor #}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="color:white">Category</label>
+                                <select name="category" id="category" class="form-control" required>
+                                    <option value='all'>All Category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="form-control btn-success" id="apply" value="Apply" >Apply</button>
+                            </div>
+                        </li>
+                    </form>
+                </ul>
+            </section>
+            
+        </aside>
+
+        <div class="content-wrapper" style="min-height: 901px;">
+            {% block formhelpers %}{% endblock formhelpers %}
+            {%block notification %}{%endblock notification %}
+            
+            <section class="content">
+                {% block content %}{% endblock content %}
+            </section>
+        </div>
+
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <a href="#">2020 - {{ today_date.year }}</a>
+            </div>
+            <a href="#">&copy; YogyaGroup</a>
+        </footer>
+
+        <div class="control-sidebar-bg"></div>
+
+    </div>
+    <!-- ./wrapper -->
+
+</body>
+</html>

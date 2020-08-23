@@ -1,0 +1,159 @@
+{% extends 'back/layout.html' %} 
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block header %}
+    <h1>Product</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Product</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<!-- /.box-header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title">Receiving</h3>
+                </div>
+                <div class="box-body">
+                    <form id="main_form" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="nav-tabs-custom">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a href="#tab_1" data-toggle="tab">Input</a></li>
+                                        <li><a href="#tab_2" data-toggle="tab">List</a></li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="tab_1">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Qty</th>
+                                                        <th>Cogs</th>
+                                                        <th>Normal Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for i in range(10) %}
+                                                        <tr>
+                                                            <td>
+                                                                <select name="product_id_{{ loop.index }}" class="form-control">
+                                                                    {% for product in products %}
+                                                                        <option value="{{ product.id }}">{{ product.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </td>
+                                                            <td><input type="number" name="qty[]" class="form-control" min="1" ></td>
+                                                            <td><input type="number" name="cogs_{{ loop.index }}" class="form-control" min="1"></td>
+                                                            <td><input type="number" name="normal_price_{{ loop.index }}" class="form-control" min="1"></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="tab-pane" id="tab_2">
+                                            <table id="datatable" class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>SKU</th>
+                                                        <th>Name</th>
+                                                        <th>Qty</th>
+                                                        <th>Cogs</th>
+                                                        <th>Normal Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for r in receivings %}
+                                                    <tr>
+                                                        <td align="center">
+                                                            <a href="#" class="btnDelete" title="Delete" data-id="{{ r['id'] }}" data-sku="{{ r['sku'] }}"><i class="fa fa-trash"></i></a>
+                                                        </td>
+                                                        <td>{{ r['sku'] }}</td>
+                                                        <td>{{ r['name'] }}</td>
+                                                        <td>{{ "{:,.0f}".format(r['qty']) }}</td>
+                                                        <td>{{ "{:,.0f}".format(r['price']) }}</td>
+                                                        <td>{{ "{:,.0f}".format(r['normal_price']) }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="col-md-6">
+                                <a role="button" href="{{ url_for('product.index') }}" class="btn btn-default"><i class="fa fa-chevron-left fa-fw"></i> Back</a>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-save fa-fw"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+	<script>
+		$(document).ready(function(){
+            $('#datatable').DataTable({});
+            $(".btnDelete").on('click', function(){
+                var id = $(this).data("id");
+                var sku = $(this).data("sku");
+                swal({
+                    title: "Hapus data ?",
+                    text: "SKU : " + sku,
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes",
+                    closeOnConfirm: true,
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: "{{ url_for('product.deleteReceiving') }}",
+                            dataType: "json",
+                            data: {
+                                "id" : id
+                            },
+                            error: function (request, error) {
+                                console.log(error);
+                            },
+                        }).done(function (data) {
+                            if (data=='1'){
+                                swal({
+                                    title: 'Berhasil',
+                                    text: 'Data berhasil dihapus',
+                                    type: "success"
+                                });
+                                location.href = "{{ url_for('product.receiving') }}"
+                            }
+                        });
+                    }
+                });
+            });
+        });
+	</script>
+{% endblock script %}

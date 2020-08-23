@@ -1,0 +1,86 @@
+{% extends 'layout_plot.html' %} 
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block content %}
+<style>
+    
+</style>
+
+<div class="col-md-12">
+    <h1>User</h1>
+    
+    <div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">User Data</h3>
+                </div>
+                <div class="box-body">
+                    <div class="btn-group">
+						<a class="btn btn-success" href="{{ url_for('user.create') }}"> Create</a>
+					</div>
+					<br><br>
+					<div class="table-responsive">
+						<table id="datatable" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Full Name</th>
+									<th>Username</th>
+									<th>Created At</th>
+									<th>Updated At</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for user in users %}
+								<tr>
+									<td align="center">
+										<a href="{{ url_for('user.update', username=user.username) }}" title="Edit"><i class="fa fa-pencil"></i></a>
+									</td>
+									<td>{{ user['full_name'] }}</td>
+									<td>{{ user['username'] }}</td>
+									<td>{{ user['created_at'].strftime('%d-%m-%Y') }}</td>
+									<td>{{ user['updated_at'].strftime('%d-%m-%Y') }}</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/datatable-custom.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='datatable-button1.10.19/buttons.dataTables.min.css') }}">
+<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datatable-button1.10.19/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.flash.min.js') }}"></script>
+<script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.html5.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.print.min.js') }}"></script> -->
+<script src="{{ url_for('static', filename='datatable-button1.10.19/jszip.min.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='datatable-button1.10.19/pdfmake.min.js') }}"></script> -->
+<script src="{{ url_for('static', filename='datatable-button1.10.19/vfs_fonts.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='datatable-fixcolumn.js') }}"></script> -->
+
+<script>
+	$(document).ready(function() {
+		$('#datatable').DataTable({
+			
+		});
+	});
+</script>
+{% endblock content %}
+{% block script %}
+
+{% endblock script %}

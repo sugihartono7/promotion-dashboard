@@ -1,0 +1,169 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Report</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Report</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12 no-print">
+			<div class="box">
+				<div class="box-header with-border">
+                    <h3 class="box-title">Product</h3>
+                </div>
+				<div class="box-body">
+					<form id="main_form" method="post">
+						<div class="row">
+							<div class="form-group required col-md-2">
+                                {{ render_field(form.start_date, class='form-control', id='start_date') }}
+							</div>
+							<div class="form-group required col-md-2">
+                                {{ render_field(form.end_date, class='form-control', id='end_date') }}
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Sales Type</label>
+                                <select class="form-control" name="sales_type" id="sales_type">
+									<option value="-1">ALL</option>
+                                    <option value='POS' >POS</option>
+                                    <option value='online_sales'>Sales</option>
+                                </select>
+							</div>
+							<div class="form-group required col-md-3">
+                                <label class="control-label">Product</label>
+                                <select name="product_id" id="product_id" class="form-control select2 select2-hidden-accessible input-sm" style="width:100%;position:absolute;" tabindex="-1" aria-hidden="true">
+                                    <option value="-1">ALL</option>
+                                </select>
+							</div>
+							<div class="form-group required col-md-1">
+								<label class="control-label"></label>
+                                <div class="btn-group">
+                                    <button type="button" id="btnSubmit" class="btn btn-success form-control"><i class="fa fa-search fa-fw"></i> Submit</button>
+                                </div>
+							</div>
+                        </div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12" id="div-print">
+            <div class="box">
+                <section class="invoice" style="margin:10px;">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2 class="page-header">
+                                <img src="{{ url_for('static', filename='img/AECO-200-x-60.png') }}" class="user-image">&nbsp;
+                                <small class="pull-right">{{ today_date }}</small>
+							</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+						<div class="col-sm-12 invoice-col" style="text-align: center;"><h4><b>PRODUCT REPORT</b></h4></div>
+						<div class="col-sm-12 invoice-col" style="text-align: center;margin-bottom:20px;" id="period"></div>
+                        <div class="col-xs-12 table-responsive">
+                            <table class="table table-striped" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Date</th>
+                                        <th>Product</th>
+                                        <th style="text-align:right;">Qty</th>
+                                    </tr>
+                                </thead>    
+                                <tbody>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row no-print">
+                        <div class="col-xs-12">
+                            <button type="button" class="btn btn-success pull-right" onclick="window.print();">
+                                <i class="fa fa-print"></i> Print
+                            </button>
+                           <!--  <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;">
+                                <i class="fa fa-download"></i> Generate PDF
+                            </button> -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		function getProductList(){
+            $.ajax({
+                url: "{{ url_for('report.getProductList') }}",
+                type: 'GET',
+                success: function(response){
+                    for (x=0; x < (response.data.length); x++){
+                        var opt = "<option value='"+response.data[x].id+"'>"+response.data[x].name+"</option>";
+                        $("#product_id").append(opt);
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+		}
+		
+		$(document).ready(function() {
+			$('.select2').select2();
+			getProductList();
+			$('#div-print').hide();
+
+			$('#btnSubmit').on("click", function(){
+				$.ajax({
+					url: "{{ url_for('report.getReportProduct') }}",
+					type: "POST",
+					data: $("#main_form").serialize(),
+					success: function(response){
+						// console.log(response);
+						$('#div-print').show();
+						var row  = "";
+						var total_qty = 0;
+						var period = "Dari "+$("#start_date").val()+" s/d "+$("#end_date").val();
+
+						for (x=0; x < (response.data.length); x++){
+							total_qty += parseInt(response.data[x].total_qty);
+
+							row += "<tr>";
+                            row += "<td>"+response.data[x].code+"</td>";
+                            row += "<td>"+response.data[x].created_at+"</td>";
+							row += "<td>"+response.data[x].product_name+"</td>";
+							row += "<td align='right'>"+formatMoney(response.data[x].total_qty, decimalCount=0)+"</td>";
+							row += "</tr>";
+						}
+						
+						row += "<tr>";
+						row += "<td align='right' colspan='3'><b>Total</b></td>";
+						row += "<td align='right'><b>"+formatMoney(total_qty, decimalCount=0)+"</b></td>";
+						row += "</tr>";
+							
+						$('#datatable > tbody:last-child').html(row);
+						$('#period').html(period);
+					},
+					error: function(error){
+						console.log(error);
+					}
+				});
+			});
+		});
+	</script>
+{% endblock script %}

@@ -1,0 +1,80 @@
+{% extends 'back/layout.html' %} 
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Product</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Product</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-body">
+					<div class="btn-group">
+						<a class="btn btn-success" href="{{ url_for('product.create') }}"><i class="fa fa-plus fa-fw"></i> Create</a>
+						<a class="btn btn-success" href="{{ url_for('product.receiving') }}"><i class="fa fa-cart-arrow-down"></i> Receiving</a>
+					</div>
+					<br><br>
+					<div class="table-responsive">
+						<table id="datatable" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>SKU</th>
+									<th>Name</th>
+									<th>Category</th>
+									<th>Type</th>
+									<th>Normal</th>
+									<th>Point</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for product in products %}
+								<tr>
+									<td align="center">
+										<a href="{{ url_for('product.update', id=product.id) }}" title="Edit"><i class="fa fa-pencil"></i></a>
+										&nbsp;
+										<a href="{{ url_for('product.review', id=product.id) }}" title="Ulasan"><i class="fa fa-star"></i></a>
+										&nbsp;
+										<a href="{{ url_for('product.stock', id=product.id) }}" title="Stock Movement"><i class="fa  fa-exchange"></i></a>
+									</td>
+									<td>
+										{{ product['sku'] }}
+									</td>
+									<td>{{ product['name'] }}</td>
+									<td>{{ product['category_name'] }}</td>
+									<td>{{ product['type_name'] }}</td>
+									<td>{{ "{:,.0f}".format(product['normal_price']) }}</td>
+									<td>{{ product['point'] }}</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#datatable').DataTable({
+				
+			})
+		});
+	</script>
+{% endblock script %}

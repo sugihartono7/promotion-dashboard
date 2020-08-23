@@ -1,0 +1,89 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Report</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Report</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12" id="div-print">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Tagihan</h3>
+                </div>
+                <section class="invoice" style="margin:10px;">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2 class="page-header">
+                                <img src="{{ url_for('static', filename='img/AECO-200-x-60.png') }}" class="user-image">&nbsp;
+                                <small class="pull-right">{{ today_date }}</small>
+							</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+						<div class="col-sm-12 invoice-col" style="text-align: center;"><h4><b>TAGIHAN REPORT</b></h4></div>
+						<div class="col-sm-12 invoice-col" style="text-align: center;margin-bottom:20px;" id="period"></div>
+                        <div class="col-xs-12 table-responsive">
+                            <table class="table table-striped" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Date</th>
+                                        <th style="text-align:right;">Total</th>
+                                    </tr>
+                                </thead>    
+                                <tbody>
+                                    {%for r in tagihan %}
+                                        <tr>
+                                            <td>{{ r['code'] }}</td>
+                                            <td>{{ r['customer_name'] }}</td>
+                                            <td>{{ r['phone1'] }}</td>
+                                            <td>{{ r['address'] }}</td>
+                                            <td>{{ '' if r['created_at'] is none else r['created_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                            <td align="right">{{ "{:,.0f}".format(r['total']) }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row no-print">
+                        <div class="col-xs-12">
+                            <button type="button" class="btn btn-success pull-right" onclick="window.print();">
+                                <i class="fa fa-print"></i> Print
+                            </button>
+                           <!--  <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;">
+                                <i class="fa fa-download"></i> Generate PDF
+                            </button> -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		
+		$(document).ready(function() {
+			
+		});
+	</script>
+{% endblock script %}

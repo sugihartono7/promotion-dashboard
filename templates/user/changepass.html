@@ -1,0 +1,54 @@
+{% extends 'layout_plot.html' %} 
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block content %}
+<style>
+    
+</style>
+
+<div class="col-md-12">
+    <h1>User</h1>
+    
+    <div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Change Password</h3>
+                </div>
+                <div class="box-body">
+                    <form id="main_form" method="post">
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                <label class="control-label">Old Password</label>
+                                <input type="password" name="old_password" class="form-control" >
+                            </div>
+                            <div class="form-group required col-md-4">
+                                <label class="control-label">New Password</label>
+                                <input type="password" name="new_password" class="form-control">
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="col-md-8 text-right">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-info"> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block script %}
+
+{% endblock script %}

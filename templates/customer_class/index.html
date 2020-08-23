@@ -1,0 +1,73 @@
+{% extends 'back/layout.html' %} 
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Customer Class</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Customer Class</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-body">
+					<div class="btn-group">
+						<a class="btn btn-success" href="{{ url_for('customer_class.create') }}"><i class="fa fa-plus fa-fw"></i> Create</a>
+					</div>
+					<br><br>
+					<div class="table-responsive">
+						<table id="datatable" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Code</th>
+									<th>Name</th>
+									<th>Percent Disc</th>
+									<th>First Trans</th>
+									<th>Next Trans</th>
+									<th>Created At</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for customer_class in customer_classes %}
+								<tr>
+									<td align="center">
+										<a href="{{ url_for('customer_class.update', id=customer_class.id) }}" title="Edit"><i class="fa fa-pencil"></i></a>
+									</td>
+									<td>{{ customer_class['code'] }}</td>
+									<td>{{ customer_class['name'] }}</td>
+									<td>{{ customer_class['percent_discount'] }}%</td>
+									<td>{{ "{:,.0f}".format(customer_class['first_transaction']) }}</td>
+									<td>{{ "{:,.0f}".format(customer_class['next_transaction']) }}</td>
+									<td>{{ customer_class['created_at'] }} </td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#datatable').DataTable({
+				
+			})
+		});
+	</script>
+{% endblock script %}

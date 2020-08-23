@@ -1,0 +1,149 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if form.errors %}
+        <div class="alert alert-info">
+            <h4><i class="icon fa fa-info-circle"></i> Info</h4>
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    {{ form[field_name].label }}: {{ error }}<br>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock notification %}
+
+{% block header %}
+    <h1>Product</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Product</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Create</h3>
+                </div>
+                <div class="box-body">
+                    <form id="main_form" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                {{ render_field(form.sku, class='form-control') }}
+                            </div>
+                            <div class="form-group required col-md-8">
+                                <label class="control-label">Category</label>
+                                <select class="form-control" name="category_id">
+                                    {% for category in categories %}
+                                        <option value="{{ category['id'] }}">{{ category['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                {{ render_field(form.name, class='form-control') }}
+                            </div>
+                            <div class="form-group required col-md-8">
+                                <label class="control-label">Type</label>
+                                <select class="form-control" name="type_id">
+                                    {% for type in types %}
+                                        <option value="{{ type['id'] }}">{{ type['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                <label class="control-label">Description</label>
+                                <textarea name="description" class="form-control" placeholder="" value=""></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Normal Price</label>
+                                <input type="number" name="normal_price" class="form-control" placeholder="" value="">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Point</label>
+                                <input type="number" name="point" class="form-control" placeholder="" value="">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Weight (gram)</label>
+                                <input type="number" name="weight" class="form-control" placeholder="" value="">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Extra Fee (XXL Size)</label>
+                                <input type="number" name="extra_fee" class="form-control" placeholder="" value="20000">
+                            </div>
+                        </div>
+                        <div class="alert alert-info" style="margin-bottom:0px;">
+                            <h4 style="font-size:14px;margin-bottom:0px;"><i class="icon fa fa-info-circle"></i> Info : Media dapat berupa foto</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Media</th>
+                                            <th>Sorting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in range(7) %}
+                                            <tr>
+                                                <td><input type="file" name="medias[]" class="form-control" placeholder="" value=""></td>
+                                                <td><input type="number" name="sorting_{{ loop.index }}" class="form-control" value="{{ loop.index }}"></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                <label class="control-label"></label>
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="is_disabled" > Is Disabled
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="col-md-6">
+                                <a role="button" href="{{ url_for('product.index') }}" class="btn btn-default"><i class="fa fa-chevron-left fa-fw"></i> Back</a>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-save fa-fw"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		$(document).ready(function(){
+            
+        });
+	</script>
+{% endblock script %}

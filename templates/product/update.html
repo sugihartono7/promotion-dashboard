@@ -1,0 +1,208 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if form.errors %}
+        <div class="alert alert-info">
+            <h4><i class="icon fa fa-info-circle"></i> Info</h4>
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    {{ form[field_name].label }}: {{ error }}<br>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock notification %}
+
+{% block header %}
+    <h1>Product</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Product</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<!-- /.box-header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title">Update</h3>
+                </div>
+                <div class="box-body">
+                    <form id="main_form" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                {{ render_field(form.sku, class='form-control', value=data.sku) }}
+                            </div>
+                            <div class="form-group required col-md-8">
+                                <label class="control-label">Category</label>
+                                <select class="form-control" name="category_id">
+                                    {% for category in categories %}
+                                        <option value="{{ category['id'] }}" {{ 'selected' if category['id'] == data['category_id'] else '' }}>{{ category['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                {{ render_field(form.name, class='form-control', value=data.name) }}
+                            </div>
+                            <div class="form-group required col-md-8">
+                                <label class="control-label">Type</label>
+                                <select class="form-control" name="type_id">
+                                    {% for type in types %}
+                                        <option value="{{ type['id'] }}" {{ 'selected' if type['id'] == data['type_id'] else '' }}>{{ type['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                <label class="control-label">Description</label>
+                                <textarea name="description" class="form-control" placeholder="" >{{ data['description'] }}</textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Normal Price</label>
+                                <input type="number" name="normal_price" class="form-control" placeholder="" value="{{ "{:.0f}".format(data['normal_price']) }}">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Point</label>
+                                <input type="number" name="point" class="form-control" placeholder="" value="{{ "{:.0f}".format(data['point']) }}">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Weight (gram)</label>
+                                <input type="number" name="weight" class="form-control" placeholder="" value="{{ "{:.0f}".format(data['weight']) }}">
+                            </div>
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Extra Fee (XXL Size)</label>
+                                <input type="number" name="extra_fee" class="form-control" placeholder="" value="{{ "{:.0f}".format(data['extra_fee']) }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                <label class="col-sm-12 control-label">Size Available</label>
+                                <div class="col-sm-2">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" {{ 'checked' if 'S' in sizes else '' }} name="sizes[]" value="S">S</input></label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" {{ 'checked' if 'M' in sizes else '' }} name="sizes[]" value="M">M</input></label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" {{ 'checked' if 'L' in sizes else '' }} name="sizes[]" value="L">L</input></label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" {{ 'checked' if 'XL' in sizes else '' }} name="sizes[]" value="XL">XL</input></label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" {{ 'checked' if 'XXL' in sizes else '' }} name="sizes[]" value="XXL">XXL</input></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" style="margin-bottom:0px;">
+                            <h4 style="font-size:14px;margin-bottom:0px;"><i class="icon fa fa-info-circle"></i> Info : Media dapat berupa foto</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table" id="product_table">
+                                    <thead>
+                                        <tr>
+                                            <th><button type="button" id="addRow" class="btn btn-default btn-sm"><i class="fa fa-plus fa-fw"></i> Add Row</button></th>
+                                            <th>Media</th>
+                                            <th>Sorting</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if product_media | count <= 0 %}
+                                            <tr id="1">
+                                                <td>
+                                                    <img src="" class="img-responsive" width="100" height="100" />
+                                                    <input type="hidden" name="id_1" class="form-control" value="">
+                                                </td>
+                                                <td><input type="file" name="medias[]" class="form-control" placeholder="" value=""></td>
+                                                <td><input type="number" name="sorting_1" id="sorting_1" class="form-control" value="1"></td>
+                                            </tr>
+                                        {% else %}
+                                            {% for pm in product_media %}
+                                                <tr id="{{ loop.index }}">
+                                                    <td>
+                                                        <img src="{{ pm['path'] }}" class="img-responsive" width="100" height="100" />
+                                                        <input type="hidden" name="id_{{ loop.index }}" class="form-control" value="{{ pm['id'] }}">
+                                                    </td>
+                                                    <td><input type="file" name="medias[]" class="form-control" placeholder="" value=""></td>
+                                                    <td><input type="number" name="sorting_{{ loop.index }}" id="sorting_{{ loop.index }}" class="form-control" value="{{ loop.index }}"></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                <label class="control-label"></label>
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="is_disabled" {{ 'checked' if data['is_disabled'] == '1' else '' }}> Is Disabled
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="col-md-6">
+                                <a role="button" href="{{ url_for('product.index') }}" class="btn btn-default"><i class="fa fa-chevron-left fa-fw"></i> Back</a>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-save fa-fw"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		$(document).ready(function(){
+            $("#addRow").on('click', function(){
+                if ($('#product_table tbody tr:last').prop('id')===undefined)
+                    last_row = 0;
+                else 
+                    last_row = parseInt($('#product_table tbody tr:last').prop('id'))+1;
+
+                var row  = "<tr id='"+last_row+"'>";
+                    row += "<td><input type='hidden' name='id_"+last_row+"' value=''></td>";
+                    row += "<td><input type='file' name='medias[]' class='form-control'></td>";
+                    row += "<td><input type='number' name='sorting_"+last_row+"' id='sorting_"+last_row+"' value='"+last_row+"' class='form-control'></td>";
+                    row += "</tr>";
+                $('#product_table > tbody:last-child').append(row); 
+            });
+        });
+	</script>
+{% endblock script %}

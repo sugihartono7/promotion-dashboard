@@ -1,0 +1,71 @@
+{% extends 'back/layout.html' %} 
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success"><h4>
+        <i class="icon fa fa-info-circle"></i> Info</h4>
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% block header %}
+    <h1>Popular Product</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Popular Product</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<div class="box-body">
+					<div class="btn-group">
+						<a class="btn btn-success" href="{{ url_for('popular.create') }}"><i class="fa fa-plus fa-fw"></i> Create</a>
+					</div>
+					<br><br>
+					<div class="table-responsive">
+						<table id="datatable" class="table table-bordered table-striped">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Product</th>
+									<th>Is Active</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for popular in populars %}
+								<tr>
+									<td align="center">
+										<a href="{{ url_for('popular.update', id=popular.id) }}" title="Edit"><i class="fa fa-pencil"></i></a>
+									</td>
+									<td>{{ popular['name'] }}</td>
+									<td>
+										{% if popular['is_active']==1 %}
+											<small class="label bg-red">Yes</small>
+										{% elif popular['is_active']==0 %}
+											<small class="label bg-green">No</small>
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#datatable').DataTable({
+				
+			})
+		});
+	</script>
+{% endblock script %}

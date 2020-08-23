@@ -1,0 +1,59 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block header %}
+    <h1>Review</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Review</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<!-- /.box-header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ product_name }}</h3>
+                </div>
+                <div class="box-body">
+                    {% for review in reviews %}
+                        <div class="box box-solid">
+                            <div class="box-body">
+                                <blockquote>
+                                    {% for i in range(review['rating']) %}
+                                        <i class="fa fa-star"></i>
+                                    {% endfor %}
+                                    <p>{{ review['review'] }} </p>
+                                    <small>
+                                        {{ review['created_by'] }}
+                                        <cite>
+                                            {{ '' if review['created_at'] is none else ",on "~review['created_at'].strftime('%d-%m-%Y %H:%M:%S') }}
+                                        </cite>
+                                    </small>
+                                </blockquote>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		$(document).ready(function(){
+            
+        });
+	</script>
+{% endblock script %}

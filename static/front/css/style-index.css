@@ -1,0 +1,166 @@
+body {
+    background: #f1f2f4 !important;
+}
+
+.headertop,
+.smart_box h3,
+.momenu,
+.menu > li:hover,
+.menu > li.active,
+.order-over ul li,
+.catwgts h3,
+.fdf h3,
+.headbasket,
+input#wp-submit.button-primary,
+.button.cl,
+.btn.cl,
+.button.large,
+.wp-pagenavi span.current,
+span:focus,
+.pagination>.active>span:hover,
+.order-over ul li,
+.kats,
+.smart_box h3,
+.smart_search select,
+.sm-footer,
+.footer,
+ul#nav li a,
+.lgbut .b_rs:hover,
+.pagination>.active>a,
+.pagination>.active>a:focus,
+.pagination>.active>a:hover,
+.pagination>.active>span,
+.pagination>.active>span:focus,
+.pagination>.active>span:hover {
+    background-color: #05d9e1
+}
+
+.pagination>.active>a,
+.pagination>.active>a:focus,
+.pagination>.active>a:hover,
+.pagination>.active>span,
+.pagination>.active>span:focus,
+.pagination>.active>span:hover {
+    border: none;
+}
+
+.ors,
+.menu > li > a,
+.pagination>li>a,
+.pagination>li>span {
+    color: #05d9e1;
+}
+
+.menu > li.right a {
+    color: #ffffff;
+}
+
+.button.cl,
+.btn.cl,
+.ors,
+.fdf,
+input#wp-submit.button-primary,
+.late,
+.address_wrapper:hover,
+#searchform button,
+.smart_search .sol,
+.smart_search select {
+    border-color: #05d9e1;
+}
+
+.caret {
+    border-top: 4px solid #05d9e1;
+}
+
+.button.cl,
+.btn.cl {
+    border-bottom: 3px solid #ddd;
+}
+
+.headertop {
+    border-bottom: 1px solid #efefef;
+    background: #f1f2f4;
+}
+
+.smart_dropdownmenu {
+    background: #f1f2f4;
+}
+
+.menu > li > a {
+    color: #110011;
+}
+
+.menu > li:hover,
+.menu > li.active,
+.order-over ul li,
+.catwgts h3,
+.fdf h3,
+.headbasket,
+input#wp-submit.button-primary,
+.button.cl,
+.btn.cl,
+.button.large,
+.wp-pagenavi span.current,
+span:focus,
+.pagination>.active>span:hover,
+.order-over ul li,
+.kats,
+.smart_box h3,
+ul#nav li a,
+.lgbut .b_rs:hover,
+.pagination>.active>a,
+.pagination>.active>a:focus,
+.pagination>.active>a:hover,
+.pagination>.active>span,
+.pagination>.active>span:focus,
+.pagination>.active>span:hover {
+    background-color: #05d9e1;
+}
+
+.button.cl,
+.btn.cl,
+.ors,
+.fdf,
+input#wp-submit.button-primary,
+.late,
+.address_wrapper:hover {
+    border-color: #05d9e1;
+}
+
+.footer,
+body {
+    font-family: 'Roboto', sans-serif;
+}
+.sm-footer {
+    background: #c5d7e0;
+}
+
+.smart_search .sol,
+.smart_search select {
+    border-color: #f1f2f4 !important;
+}
+
+#searchform button {
+    background-color: #f1f2f4 !important;
+}
+
+.cnt,
+.smart_ftbox h3,
+.smart_ftbox li a,
+.textwidget,
+.sm-footer {
+    text-shadow: none;
+    color: #3f3f3f !important;
+}
+
+li.right a {
+    color: #fff;
+}
+
+.info-kontak {
+    background: #05d9e1;
+}
+
+.fancybox-inner .alert {
+    display: block;
+}

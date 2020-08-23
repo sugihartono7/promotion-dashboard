@@ -1,0 +1,193 @@
+{% extends 'layout_plot.html' %} 
+
+{% block content %}
+<style>
+    .barGraph {
+        padding:0px;
+        margin:0px;
+    }
+    .ptitle {
+        color:black;
+        font-weight: bold;
+        margin: 0 0 4px;
+    }
+    
+</style>
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs" style="background-color: #e5ecf6;">
+        <li><a href="#" id="btnTrigger">Pre-During Analysis</a></li>
+        <li class="active"><a href="{{ url_for('dashboard.artdetail', store=_store, directorate=_directorate, division=_division, category=_category, start_date=_start_date, end_date=_end_date) }}" data-toggle="tab"  style="background-color: #e5ecf6;font-weight:bold;">Article Detail</a></li>
+    </ul>
+    <div class="tab-content col-md-12"  style="background-color: #e5ecf6;">
+        <div class="tab-pane" id="tab_1">
+            
+        </div>
+       
+        <div class="tab-pane active" id="tab_2">
+            <div class="col-xs-2">
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Sales Promo (IDR)</p>
+                        <h3 style="font-size:2vw;">{{ total_netsales }}Mil</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="small-box {{ sales_growth_class }}">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Sales Promo Growth</p>
+                        <h3 style="font-size:2vw;">{{ sales_growth }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Total Promo Qty (Pcs)</p>
+                        <h3 style="font-size:2vw;">{{ total_qty }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="small-box {{ qty_growth_class }}">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Qty Promo Growth</p>
+                        <h3 style="font-size:2vw;">{{ qty_growth }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="small-box {{ profit_growth_class }}">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Profit Promo Growth</p>
+                        <h3 style="font-size:2vw;">{{ profit_growth }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="small-box {{ margin_promo_class}}">
+                    <div class="inner">
+                        <p class="ptitle" style="font-size:12px;">Margin Promo</p>
+                        <h3 style="font-size:2vw">{{ margin_promo }}%</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom:10px;"></div>
+            
+            <div class="col-xs-12 barGraph">
+                <div class="table-responsive">
+                    <table id="datatable" class="table cell-border compact stripe">
+                        <thead>
+                            <tr>
+                                <th>Directorate</th>
+                                <th>Division</th>
+                                <th>Category</th>
+                                <th>SKU</th>
+                                <th>SKU<br>Description</th>
+                                <th>Brand</th>
+                                <th>Principle</th>
+                                <th>QTY<br>TY</th>
+                                <th>Sales<br>TY</th>
+                                <th>Profit<br>TY</th>
+                                <th>Margin<br>TY</th>
+                                <th>QTY<br>LY</th>
+                                <th>Sales<br>LY</th>
+                                <th>Profit<br>LY</th>
+                                <th>Margin<br>LY</th>
+                                <th>QTY<br>Growth</th>
+                                <th>Sales<br>Growth</th>
+                                <th>Profit<br>Growth</th>
+                                <th>Margin<br>Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dt in data %}
+								<tr>
+									<td>{{ dt['dirdesc'] }}</td>
+									<td>{{ dt['merdivdesc_y'] }}</td>
+									<td>{{ dt['mercatdesc_y'] }}</td>
+									<td>{{ dt['sku'] }}</td>
+									<td>{{ dt['sku_desc_y'] }}</td>
+									<td>{{ dt['brand_y'] }}</td>
+									<td>{{ dt['principle_y'] }}</td>
+									<td>{{ dt['tqty'] }}</td>
+                                    <td>{{ dt['tnetsales'] }}</td>
+									<td>{{ dt['tprofit'] }}</td>
+                                    <td>{{ dt['ty_margin'] }}</td>
+									<td>{{ dt['qty_x'] }}</td>
+									<td>{{ dt['netsales_x'] }}</td>
+									<td>{{ dt['profit_x'] }}</td>
+									<td>{{ dt['ly_margin'] }}</td>
+									<td>{{ dt['growth_qty'] }}</td>
+									<td>{{ dt['growth_netsales'] }}</td>
+									<td>{{ dt['growth_profit'] }}</td>
+									<td>{{ dt['margin_change'] }}</td>
+								</tr>
+							{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> 
+    </div>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/datatable-custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='datatable-button1.10.19/buttons.dataTables.min.css') }}">
+	<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='datatable-button1.10.19/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.flash.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.html5.min.js') }}"></script>
+	<!-- <script src="{{ url_for('static', filename='datatable-button1.10.19/buttons.print.min.js') }}"></script> -->
+	<script src="{{ url_for('static', filename='datatable-button1.10.19/jszip.min.js') }}"></script>
+	<!-- <script src="{{ url_for('static', filename='datatable-button1.10.19/pdfmake.min.js') }}"></script> -->
+	<script src="{{ url_for('static', filename='datatable-button1.10.19/vfs_fonts.js') }}"></script>
+	<!-- <script src="{{ url_for('static', filename='datatable-fixcolumn.js') }}"></script> -->
+	<script>
+		$(document).ready(function() {
+			$('#datatable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel'
+                ],
+				// "processing": true,
+				// "serverSide": true,
+				// "cache": false,
+				// "ajax": "{{ url_for('dashboard.artdetail',[store=_store, directorate=_directorate, division=_division, category=_category, start_date=_start_date, end_date=_end_date]) }}",
+				// "columns": [
+				// 	{ "data": "dirdesc" },
+				// 	{ "data": "merdivdesc_y" },
+				// 	{ "data": "sku" },
+				// 	{ "data": "sku_desc_y" },
+				// 	{ "data": "brand_y" },
+				// 	{ "data": "principle_y" },
+				// 	{ "data": "tqty" },
+				// 	{ "data": "tnetsales" },
+				// 	{ "data": "tprofit" },
+				// 	{ "data": "ty_margin" },
+				// 	{ "data": "qty_x" },
+				// 	{ "data": "netsales_x" },
+				// 	{ "data": "profit_x" },
+				// 	{ "data": "ly_margin" },
+				// 	{ "data": "growth_qty" },
+				// 	{ "data": "growth_netsales" },
+				// 	{ "data": "growth_profit" },
+				// 	{ "data": "margin_change" },
+				// ],
+                // scrollX:        true,
+                // scrollCollapse: true,
+                // fixedColumns:   {
+                //     leftColumns: 4,
+                // }
+            });
+            $("#btnTrigger").on('click', function(){
+                $("#frm").submit();
+            });
+		});
+	</script>
+</div>
+{% endblock content %}
+{% block script %}
+    
+{% endblock script %}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="http://127.0.0.1:5000/static/favicon.ico" type="image/x-icon">
+    <title>
+        YO-PROMO | Login
+    </title>
+
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='ionicons/css/ionicons.min.css') }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='icheck/flat/blue.css') }}">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+    <style>
+        .flash {
+            font-size: 12px;
+            color: red;
+        }
+        .bglogin {
+            background-image:url("{{ url_for('static', filename='img/yg.png') }}");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: contain;
+        }
+
+        .boxlogin {
+            background-color:transparent;
+        }
+        .textbox {
+           
+            padding-left:40px;
+            
+
+        }
+    </style>
+</head>
+
+<body class="hold-transition login-page bglogin">
+
+    <div class="login-box" style="margin-top:5%;margin-left:74%">
+        
+        <!-- /.login-logo -->
+        <div class="login-box-body boxlogin">
+			<p class="login-box-msg">
+				<span style="color:red;font-weight: bold;font-size:30px;">
+					YO
+                </span>
+                <span style="color:black;font-weight: bold;font-size:30px;">
+					PROMO
+                </span>
+
+            </p>
+            <p class="login-box-msg">
+                Promotion Analysis Yogya Group
+            </p>
+            <p class="login-box-msg">
+                {% for message in get_flashed_messages() %}
+                    <span class="flash">{{ message }}</span>
+                {% endfor %}
+			</p>
+            <form method="post">
+                <input id="csrf_token" name="csrf_token" type="hidden" value="">
+                <div class="form-group has-feedback" style="background-color:transparent">
+                    <span class="glyphicon glyphicon-user form-control-feedback" style="left:0"></span>
+                    <input class="form-control textbox" id="username_login" name="username" autofocus placeholder="Username" required="" type="text" value="" >
+                </div>
+
+                <div class="form-group has-feedback">
+                    <span class="glyphicon glyphicon-lock form-control-feedback" style="left:0"></span>
+                    <input class="form-control textbox" id="pwd_login" name="password" placeholder="Kata Sandi" required="" type="password" value="" >
+                </div>
+
+				<div class="row"></div>
+
+                <div class="row">
+                    <div class="col-xs-8">
+                        
+                    </div>
+                    <!-- /.col -->
+
+                    <div class="col-xs-4">
+                        <button type="submit" name="login" class="btn btn-default btn-block btn-flat">Masuk</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+
+            </form>
+
+        </div>
+        <!-- /.login-box-body -->
+
+    </div>
+
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- iCheck -->
+    <script src="{{ url_for('static', filename='icheck/icheck.min.js') }}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,620 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block header %}
+    <h1>Aeco Point Of Sale</h1>
+    
+{% endblock header %}
+
+{% block content %}
+<style type="text/css" >
+    .divprint {
+        border: 1px solid black;
+    }    
+    .tdSlim {
+        padding:2px;
+    }
+    @media print {
+        .printArea {
+            display: block !important;
+        }
+    }
+    .printArea {
+        font-size:10px; 
+        padding: 0px;
+        display: none;
+    }
+    .swal-modal {
+        display: none;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12 no-print" id="sectionAll">
+        <div class="" style="min-height:531px;">
+            <form id="main_form">
+                <div class="col-md-6">
+                    <div id="lefttop" style="margin-bottom:5px;">
+                        <div class="form-group" style="margin-bottom:5px;">
+                            <div class="col-md-10" style="padding-left:0px;padding-right:0px;">
+                                <select name="customer_id" id="customer_id" required="required" class="form-control select2 select2-hidden-accessible input-sm" style="width:100%;position:absolute;" tabindex="-1" aria-hidden="true">
+                                    <option value="">Select Customer</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2" style="padding-left:5px;padding-right:0px;">
+                                <button id="btnNewCustomer" type="button" class="btn btn-default btn-block btn-flat" data-toggle="modal" data-target="#modal-default">
+                                    <i class="fa fa-plus fa-fw"></i> NEW</button>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="col-md-12 no-padding" style="padding-right:0px;">
+                                <select name="size" id="size" required="required" class="form-control input-sm"  >
+                                    <option value="">Select Size</option>
+                                </select>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div class="col-md-12 no-padding" style="padding-right:0px;">
+                                <input type="text" name="info" id="info" class="form-control ui-autocomplete-input input-sm" placeholder="Additional Information" autocomplete="off" />
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                    <div id="print" class="fixed-table-container">
+                        <div class="slimScrollDiv" style="position: relative; overflow: auto; width: auto; height: 250px;">
+                            <div id="list-table-div">
+                                <table id="posTable" class="table table-striped table-condensed table-hover list-table" style="margin:0px;" data-height="100">
+                                    <thead>
+                                        <tr class="success">
+                                            <th style="width: 20px;" class="satu"></th>
+                                            <th>Product</th>
+                                            <th style="width: 10%;text-align:center;">Size</th>
+                                            <th style="width: 20%;text-align:center;">Price</th>
+                                            <th style="width: 15%;text-align:center;">Qty</th>
+                                            <th style="width: 20%;text-align:right;">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="clear:both;"></div>
+                        <div id="totaldiv">
+                            <table id="totaltbl" class="table table-condensed totals" style="margin-bottom:10px;">
+                                <tbody>
+                                    <tr class="info">
+                                        <td colspan="4" style="width: 80%">Total</td>
+                                        <td class="text-right"><span id="total">0</span></td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td colspan="4" style="width: 80%">
+                                            Shipment Fee
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" name="shipment_fee" onclick='this.select();' id="shipment_fee" class="form-control text-right input-sm" placeholder="Fee" autocomplete="off" value="0" />
+                                        </td>
+                                    </tr>
+                                    <tr class="info">
+                                        <td colspan="3" style="width: 70%">Discount</td>
+                                        <td>
+                                            <div class="input-group">
+                                                <span class="input-group-addon" style="padding: 0px 6px; font-size:12px;border-color:transparent;background-color:transparent;">
+                                                    <input type="checkbox" id="is_percent" name="is_percent"> %
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-right" style="width: 30%">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control text-right input-sm" onclick='this.select();' id="discount" name="discount" style="text-align:right;" value="0">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="success">
+                                        <td colspan="3" style="font-weight:bold;width: 80%">Sales Total</td>
+                                        <td class="text-right" colspan="2" style="font-weight:bold;">
+                                            <span id="sales_total">0</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:5px;">
+                        <div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+                            <select name="payment" id="payment" data-placeholder="Select Payment" required="required" class="form-control" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                <option value="">Select Payment</option>
+                                <option value='bank transfer'>Bank Transfer</option>
+                                <option value='debit'>Debit</option>
+                                <option value='utang'>Utang</option>
+                                <option value='cash'>Cash</option>
+                                <option value='dua pembayaran'>Dua Pembayaran</option>
+                            </select>
+                        </div>
+                        <div style="clear:both;"></div>
+                    </div>
+
+                    <input type="hidden" name="address" id="address" />
+                    <input type="hidden" name="name" id="name" />
+                    <input type="hidden" name="city_id" id="city_id" />
+                    <input type="hidden" name="province_id" id="province_id" />
+                    <input type="hidden" name="phone1" id="phone1" />
+                    <input type="hidden" name="postal_code" id="postal_code" />
+
+                    <div id="botbuttons" class="col-xs-12 text-center">
+                        <div class="row">
+                            <div class="col-xs-12" style="padding: 0;">
+                                <button id="submit" type="button" class="btn btn-success btn-block btn-flat" onclick="createPos()" style="height:67px;">
+                                    <i class="fa fa-save fa-fw"></i> SAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-12">
+                        <div class="" style="margin-bottom:15px;">
+                            <select name="product_id" id="product_id" required="required" class="form-control select2 select2-hidden-accessible input-sm" style="width:100%;margin-left:0px;" aria-hidden="true">
+                                <option value="">Select Product</option>
+                                {% for product in products %}
+                                    <option value="{{ product['id'] ~ ';' ~ product['name'] ~ ';' ~ '{:.0f}'.format(product['point']) ~ ';' ~ '{:.0f}'.format(product['weight']) ~ ';' ~ '{:.0f}'.format(product['extra_fee']) ~ ';' ~ '{:.0f}'.format(product['cogs']) ~ ';' ~ product['path'] ~ ';' ~ product['name'] ~ ';' ~ '{:.0f}'.format(product['normal_price']) }}">{{ product['name'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="col-md-12" id="photoList"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<section class="printArea">
+    <div class="col-md-12 text-center ">
+        <img src="{{ url_for('static', filename='img/AECO-200-x-60.png') }}" width="100px" height="30px" class="img-responsive center-block" />
+        <p><b>Toko Jas Blazer AECO & HOOF</b><br>
+            Jalan Cisaranten Kulon IX No.51<br>
+            <i class="fa fa-whatsapp"></i> 085723136349
+        </p>
+    </div>
+
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <tr>
+                <td style="padding:0px;">Customer :</td>
+                <td id="customerDivPrint" style="padding:0px;"></td>
+                <td style="padding:0px;">Date :</td>
+                <td style="padding:0px;">{{ today_date }}</td>
+            </tr>
+        </table>
+        <table class="table table-striped" id="salesDetailPrint" >
+            <thead>
+                <tr>
+                    <th style="padding:0px;">Product</th>
+                    <th style="padding:0px;">Price</th>
+                    <th style="padding:0px;">Qty</th>
+                    <th style="text-align:right;padding:0px;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <table class="table table-striped" id="">
+            <tr>
+                <th style="padding:0px;"></th>
+                <th style="padding:0px;"></th>
+                <td style="text-align:right;padding:0px;">Total</td>
+                <td id="totalPrint" style="text-align:right;padding:0px;"></td>
+            </tr>
+            <tr>
+                <th style="padding:0px;"></th>
+                <th style="padding:0px;"></th>
+                <td style="text-align:right;padding:0px;">Shipment Fee</td>
+                <td id="shipmentFeePrint" style="text-align:right;padding:0px;"></td>
+            </tr>
+            <tr>
+                <th style="padding:0px;"></th>
+                <th style="padding:0px;"></th>
+                <td style="text-align:right;padding:0px;">Discount</td>
+                <td id="discountPrint" style="text-align:right;padding:0px;"></td>
+            </tr>
+            <tr>
+                <th style="padding:0px;"></th>
+                <th style="padding:0px;"></th>
+                <th style="text-align:right;padding:0px;">Sales Total</th>
+                <th id="salesTotalPrint" style="text-align:right;padding:0px;"></th>
+            </tr>
+        </table>
+    </div>
+</section>
+
+<div class="modal fade" id="modal-default" style="display: none;">
+    <form class="form-horizontal" method="post" id="customer_form" action="{{url_for('pos.saveCustomer')}}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">Add New Customer</h4>
+                </div>
+                <div class="modal-body form-group">
+                    <label class="col-sm-2 control-label">Class</label>
+                    <div class="col-sm-10">
+                        <select name="new_customer_class" id="new_customer_class" data-placeholder="Select Customer Class" required="required" class="form-control">
+                            <option value="">Select Customer Class</option>
+                            {% for customer_class in customer_classes %}
+                                {% if customer_class['id'] == 6 %}
+                                    <option value="{{ customer_class['id'] }}" selected>{{ customer_class['name'] }}</option>
+                                {% else %}
+                                    <option value="{{ customer_class['id'] }}">{{ customer_class['name'] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-body form-group">
+                    <label class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="new_customer_name" name="new_customer_name" required="required" >
+                      </div>
+                </div>
+                <div class="modal-body form-group">
+                    <label class="col-sm-2 control-label">Phone</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="new_customer_phone" name="new_customer_phone" required="required" >
+                      </div>
+                </div>
+                <div class="modal-body form-group">
+                    <label class="col-sm-2 control-label">Address</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="new_customer_address" name="new_customer_address" >
+                      </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" >Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
+{% block script %}
+	<script>
+        function calculateAll(){
+            var total = 0;
+            var sales_total = 0;
+            var shipment_fee = $('#shipment_fee').val();
+            var discount = $('#discount').val();
+
+            if (isNaN(shipment_fee)){
+                swal({
+                    title: "Oops!",
+                    text: 'Please enter a valid number Shipment Fee',
+                    type: "error"
+                });
+                shipment_fee = 0;
+            } else if (shipment_fee==''){
+                $('#shipment_fee').val(0);
+                shipment_fee = 0;
+            } 
+
+            // hitung subtotal dari tiap barang yg dibeli
+            $(".subtotal").each(function() {
+                total += parseFloat($(this).text().replace(/,/g, ''));
+            });
+
+            // hitung discount dari subtotal
+            if (isNaN(discount)){
+                swal({
+                    title: "Oops!",
+                    text: 'Please enter a valid number Discount',
+                    type: "error"
+                });
+                discount = 0;
+            } 
+            else if (discount==''){
+                $('#discount').val(0);
+                discount = 0;
+            }
+            else {
+                if ($("#is_percent").is(':checked')){
+                    discount = (parseFloat($('#discount').val()) / 100) * total;
+                }
+                else {
+                    discount = $('#discount').val();
+                }
+            }
+            
+            sales_total = total + parseFloat(shipment_fee) - parseFloat(discount);
+            $('#total').text(formatMoney(total, decimalCount=0));
+            $('#sales_total').text(formatMoney(sales_total, decimalCount=0));
+        }
+
+        function calculateRow(i){
+            $('#sell_price_'+i+', #qty_'+i).on('keyup change', function() {
+                var sell_price = $('#sell_price_'+i).val();
+                var qty = $('#qty_'+i).val();
+                var subtotal = 0;
+
+                if (isNaN(sell_price) || isNaN(qty)){
+                    swal({
+                        title: "Oops!",
+                        text: 'Please enter a number',
+                        type: "error"
+                    });
+                }else {
+                    subtotal = parseFloat(sell_price) * parseFloat(qty);
+                    $('#subtotal_'+i).text(formatMoney(subtotal, decimalCount=0));
+                    calculateAll();
+                }   
+            });
+        }
+        
+        function getCustomerList(){
+            $.ajax({
+                url: "{{ url_for('pos.getCustomerList') }}",
+                type: 'GET',
+                success: function(response){
+                    for (x=0; x < (response.data.length); x++){
+                        var opt = "<option value='"+response.data[x].id+";"+response.data[x].customer_class_id+";"+response.data[x].name+";"+response.data[x].percent_discount+";"+response.data[x].address+";"+response.data[x].province_id+";"+response.data[x].city_id+";"+response.data[x].postal_code+";"+response.data[x].phone1+"'>"+response.data[x].name+"</option>";
+                        $("#customer_id").append(opt);
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+        }
+
+		$(document).ready(function(){
+            $('.select2').select2();
+            getCustomerList();
+
+            $("#customer_id").on('change', function(){
+                if ($(this).val() == ""){
+                    swal({
+                        title: "Oops!",
+                        text: 'Please select Customer First',
+                        type: "error"
+                    });
+                }else {
+                    var customer = $(this).val().split(';');
+                    var name = customer[2].replace("'", "");
+                    var address = customer[4].replace("'", "");
+                    var province_id = customer[5];
+                    var city_id = customer[6];
+                    var postal_code = customer[7];
+                    var phone1 = customer[8];
+
+                    $("#product_id").val('').trigger('change');
+                    $('#posTable tbody').empty();
+                    $('#shipment_fee').val(0);
+                    $('#size').html("");
+                    $('#photoList').html("");
+                    $('#name').val(name);
+                    $('#address').val(address);
+                    $('#province_id').val(province_id);
+                    $('#city_id').val(city_id);
+                    $('#postal_code').val(postal_code);
+                    $('#phone1').val(phone1);
+                    calculateAll();
+                }
+                
+            });
+
+            window.onafterprint = function(){
+                window.location.reload(true);
+            }
+
+            $("#shipment_fee, #discount").on('keyup change', function(){
+                calculateAll();
+            });
+
+            $('#is_percent').on('ifChanged', function() {
+                calculateAll();
+            });
+            
+            $("#size").on('change', function(){
+                var size = $(this).val();
+                var customer = $("#customer_id").val().split(';');
+                var customer_id = customer[0];
+                var customer_class_id = customer[1];
+                var customer_name = customer[2];
+                var percent_discount = parseFloat(customer[3]);
+
+                var product = $("#product_id").val().split(';');
+                var product_id = product[0];
+                var product_name = product[1];
+                var point = parseFloat(product[2]);
+                var weight = parseFloat(product[3]);
+                var extra_fee = parseFloat(product[4]);
+                var cogs = parseFloat(product[5]);
+                var path = product[6];
+                var name = product[7];
+                var normal_price = parseFloat(product[8]);
+                var disc_class = percent_discount/100 * normal_price;
+                var price = normal_price - disc_class;
+
+                if ($('#posTable tbody tr:last').prop('id')===undefined)
+                    last_row = 0;
+                else 
+                    last_row = parseInt($('#posTable tbody tr:last').prop('id'))+1;
+
+                var row  = "<tr id='"+last_row+"'>";
+                        row += "<td class='text-center'>";
+                        row += "<input type='hidden' value='"+size+"' name='txt_size_"+last_row+"' id='txt_size_"+last_row+"'>";
+                        row += "<input type='hidden' value='"+product_id+"' name='txt_product_id_"+last_row+"' id='txt_product_id_"+last_row+"'>";
+                        row += "<input type='hidden' value='"+cogs+"' name='cogs_"+last_row+"' id='cogs_"+last_row+"' >";
+                        row += "<input type='hidden' value='"+point+"' name='point_"+last_row+"' id='point_"+last_row+"' >";
+                        row += "<input type='hidden' value='"+product_name.replace("'", "")+"' name='txt_product_name_"+last_row+"' id='txt_product_name_"+last_row+"' >";
+                        row += "<a href='#' class='btnRemove' onclick='deleteProduct("+last_row+")'><i class='fa fa-trash-o tip pointer posdel' title='Remove'></i></a></td>";
+                        row += "<td>"+product_name+"</td>";
+                        row += "<td align='center'>"+size+"</td>";
+                        row += "<td class='text-right'><input readonly id='sell_price_"+last_row+"' class='form-control text-center sell_price input-sm' name='sell_price_"+last_row+"' type='text' value='"+price+"' onclick='this.select();' /></td>";
+                        row += "<td><input id='qty_"+last_row+"' name='qty[]' class='form-control input-qty kb-pad text-center qty input-sm' type='number' min='1' value='1' onclick='this.select();' /></td>";
+                        row += "<td class='text-right'><span class='text-right subtotal' id='subtotal_"+last_row+"'>"+formatMoney(price, decimalCount=0) +"</span></td>";
+                    row += "</tr>";
+                $('#posTable > tbody:last-child').append(row); 
+                calculateRow(last_row);
+                calculateAll();
+            });
+
+            $("#product_id").on('change', function(){
+                var opt_size = "<option value=''>Select Size</option>";
+                var price = 0;
+                var sizes = ['S', 'M', 'L', 'XL', 'XXL'];
+                
+                var customer = $("#customer_id").val().split(';');
+                var customer_id = customer[0];
+                var customer_class_id = customer[1];
+                var customer_name = customer[2];
+                var percent_discount = parseFloat(customer[3]);
+
+                var product = $("#product_id").val().split(';');
+                var product_id = product[0];
+                var product_name = product[1];
+                var point = parseFloat(product[2]);
+                var weight = parseFloat(product[3]);
+                var extra_fee = parseFloat(product[4]);
+                var cogs = parseFloat(product[5]);
+                var path = product[6];
+                var name = product[7];
+                var normal_price = parseFloat(product[8]);
+                var disc_class = percent_discount/100 * normal_price;
+                var price = normal_price - disc_class;
+
+                if($("#customer_id").val() == null || $("#customer_id").val() == ''){
+                    swal({
+                        title: "Oops!",
+                        text: 'Please select Customer First',
+                        type: "error"
+                    });
+                }else {
+                    for (i=0; i<=sizes.length -1 ;i++) {
+                        if (sizes[i]=='XXL'){
+                            var price = price + extra_fee;
+                            opt_size += "<option value='"+sizes[i]+"'>"+sizes[i]+" - "+formatMoney(price, decimalCount=0)+"</option>";
+                        } else {
+                            opt_size += "<option value='"+sizes[i]+"'>"+sizes[i]+" - "+formatMoney(price, decimalCount=0)+"</option>";
+                        }
+                    }
+                    
+                    // append to size combobox
+                    if ($("#product_id").val() == null || $("#product_id").val() == '') {
+                       // do nothing
+                    }else {
+                        $('#size').html(opt_size); 
+                        if ($('#posTable tbody tr:last').prop('id')===undefined)
+                            last_row = 0;
+                        else 
+                            last_row = parseInt($('#posTable tbody tr:last').prop('id'))+1;
+                        
+                        //apend photo
+                        if (path == 'None')
+                            path = "{{ url_for('static', filename='img/no image.png') }}";
+                        var photo = "<div class='col-md-3' style='padding:2px;' id='div_image_"+last_row+"'>";
+                                photo += "<img src='"+path+"' class='img-responsive' style='border:1px solid #d2d6de;'>";
+                                photo += "<h4 class='profile-username' style='font-size: 14px'>";
+                                    photo += name+"<br>";
+                                    photo += "<b>"+formatMoney(price, decimalCount=0)+"</b>";
+                                photo += "</h4>";
+                            photo += "</div> ";
+
+                        $('#photoList').append(photo);   
+                    }
+                }
+            });
+
+            deleteProduct = function(last_row) {
+                $("#"+last_row).remove();
+                $("#div_image_"+last_row).remove();
+                calculateAll();
+                return false;
+            }
+            
+            createPos = function() {
+                if ($("#payment").val()==""){
+                    swal({
+                            title: "Oops!",
+                            text: "Please Fill Payment Method",
+                            type: "error",
+                            timer: 900
+                        });
+                }else {
+                    $.ajax({
+                        url: "{{ url_for('pos.create') }}",
+                        type: "POST",
+                        data: $("#main_form").serialize(),
+                        success: function(response){
+                            // console.log(response);
+                            if (response == "1") {
+                                var customer = $("#customer_id").val().split(';');
+                                var row = "";
+                                var shipment_fee = formatMoney($("#shipment_fee").val(), decimalCount=0);
+                                var total = $("#total").text();
+                                var sales_total = $("#sales_total").text();
+
+                                $('input[name*="qty"]').each(function(){
+                                    last_row = $(this).attr('id');
+                                    id = last_row.split('_');
+                                    row += "<tr>";
+                                        row += "<td style='padding:0px;'>"+$("#txt_product_name_"+id[1]).val()+"</td>";
+                                        row += "<td style='padding:0px;'>"+formatMoney($("#sell_price_"+id[1]).val(), decimalCount=0)+"</td>";
+                                        row += "<td style='padding:0px;'>"+$("#qty_"+id[1]).val()+"</td>";
+                                        row += "<td align='right' style='padding:0px;'>"+$("#subtotal_"+id[1]).text()+"</td>";
+                                    row += "</tr>";
+                                });
+
+                                if ($("#is_percent").is(':checked')){
+                                    total_fmt = total.replace(/,/g, '');
+                                    tmp = (parseFloat($('#discount').val()) / 100) * parseFloat(total_fmt);
+                                    discount = '('+$('#discount').val()+'%) '+formatMoney(tmp, decimalCount=0);
+                                }
+                                else {
+                                    discount = formatMoney($("#discount").val(), decimalCount=0);
+                                }
+
+                                $('#salesDetailPrint > tbody:last-child').append(row); 
+                                $("#customerDivPrint").text(customer[2]);
+                                $("#totalPrint").text(total);
+                                $("#shipmentFeePrint").text(shipment_fee);
+                                $("#discountPrint").text(discount);
+                                $("#salesTotalPrint").text(sales_total);
+                                $('form#main_form')[0].reset();
+                                $("#sectionAll").load(location.href + " #sectionAll");
+                                window.print();
+                                
+                            } else {
+                                swal({
+                                    title: "Oops!",
+                                    text: response.data.message,
+                                    type: "error",
+                                    timer: 500
+                                });
+                            }
+                        },
+                        error: function(error){
+                            console.log(error);
+                        }
+                    });
+  
+                }
+                
+            };
+        });
+	</script>
+{% endblock script %}

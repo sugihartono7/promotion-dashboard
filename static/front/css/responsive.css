@@ -1,0 +1,16 @@
+@media only screen and (max-width: 1111px) {
+	.smart_search {
+    width: 65%;
+}
+	.smart_search input.sol {
+    width: 95%;
+}
+}
+@media only screen and (max-width: 885px) {
+	.smart_search {
+    width: 60%;
+}
+	.smart_search input.sol {
+    width: 95%;
+}
+}

@@ -1,0 +1,165 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if form.errors %}
+        <div class="alert alert-info">
+            <h4><i class="icon fa fa-info-circle"></i> Info</h4>
+            {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                {% for error in field_errors %}
+                    {{ form[field_name].label }}: {{ error }}<br>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+{% endblock notification %}
+
+{% block header %}
+    <h1>Dropshipper</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dropshipper</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<!-- /.box-header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title">Update</h3>
+                </div>
+                <div class="box-body">
+                    <form id="main_form" method="post">
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                <label class="control-label">Dropshipper Name</label>
+                                <select class="form-control" name="customer_id">
+                                    {% for customer in customers %}
+                                        <option value="{{ customer['id'] }}" {{ 'selected' if customer['id']==data.customer_id else '' }}>{{ customer['name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                {{ render_field(form.name, class='form-control', value=data.name) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-12">
+                                <label class="control-label">Address</label>
+                                <input type="text" name="address" class="form-control" placeholder="" value="{{ data.address }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-3">
+                                <label class="control-label">Province</label>
+                                <select class="form-control" name="province_id" id="province_id">
+                                    <option value="">- Select Province -</option>
+                                </select>
+                            </div>
+                            <div class="form-group required col-md-4">
+                                <label class="control-label">City</label>
+                                <select class="form-control" name="city_id" id="city_id">
+                                    <option value="">- Select City -</option>
+                                </select>
+                            </div>
+                            <div class="form-group required col-md-2">
+                                <label class="control-label">Postal Code</label>
+                                <input type="text" name="postal_code" class="form-control" placeholder="" value="{{ data.postal_code }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required col-md-4">
+                                <label class="control-label">Phone</label>
+                                <input type="text" name="phone" class="form-control" placeholder="" value="{{ data.phone }}">
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="col-md-6">
+                                <a role="button" href="{{ url_for('dropshipper.index') }}" class="btn btn-default"><i class="fa fa-chevron-left fa-fw"></i> Back</a>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <div class="btn-group">
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-save fa-fw"></i> Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		$(document).ready(function(){
+            var db_province_id = "{{ data.province_id }}";
+            var city_id = "{{ data.city_id }}";
+            $.ajax({
+                url: "{{ url_for('ongkir.get_db_provinces') }}",
+                dataType: "json",
+                success: function (data) {
+                },
+                error: function (request, error) {
+                    console.log(error);
+                },
+            }).done(function (data) {
+                $.each(data, function(i) {
+                    var opt = "<option value='"+data[i].ro_province_id+"' "+(data[i].ro_province_id==db_province_id?'selected':'')+">"+data[i].ro_province+"</option>";
+                    $("#province_id").append(opt); 
+                }); 
+            });
+
+            $("#province_id").on('change', function () {
+                province_id = $(this).find("option:selected").val();
+                if (province_id != ""){
+                    $.ajax({
+                        url: "{{ url_for('ongkir.get_db_city_by_province_id') }}",
+                        dataType: "json",
+                        data: {
+                            "province_id" : province_id
+                        },
+                        error: function (request, error) {
+                            console.log(error);
+                        },
+                    }).done(function (data) {
+                        $("#city_id").find('option').remove().end();
+                        $.each(data, function(i) {
+                            var opt = "<option value='"+data[i].ro_city_id+"' "+(data[i].ro_city_id==city_id?'selected':'')+">"+data[i].ro_type +" "+ data[i].ro_city_name+"</option>";
+                            $("#city_id").append(opt);
+                        });
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "{{ url_for('ongkir.get_db_city_by_province_id') }}",
+                dataType: "json",
+                data: {
+                    "province_id" : db_province_id
+                },
+                error: function (request, error) {
+                    console.log(error);
+                },
+            }).done(function (data) {
+                $("#city_id").find('option').remove().end();
+                $.each(data, function(i) {
+                    var opt = "<option value='"+data[i].ro_city_id+"' "+(data[i].ro_city_id==city_id?'selected':'')+">"+data[i].ro_type +" "+ data[i].ro_city_name+"</option>";
+                    $("#city_id").append(opt);
+                });
+            });
+        
+        });
+	</script>
+{% endblock script %}

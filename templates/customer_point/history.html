@@ -1,0 +1,67 @@
+{% extends 'back/layout.html' %} 
+{% from "/back/_formhelpers.html" import render_field %}
+
+{% block notification %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success"><h4>
+            <i class="icon fa fa-info-circle"></i> Info</h4>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock notification %}
+
+{% block header %}
+    <h1>Customer Point</h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('dashboard.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Customer Point</li>
+    </ol>
+{% endblock header %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='timeline/timeline.css') }}">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="box">
+				<!-- /.box-header -->
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ customer['name'] }} Point History</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul class="timeline">
+                                
+                                {% for customer_point in customer_points %}
+                                    {% if customer_point['point'] < 0 %}
+                                        {% set icon = "fa bg-red" %}
+                                        {% set point = customer_point['point'] %}
+                                    {% else %}
+                                        {% set icon = "fa bg-green" %}
+                                        {% set point = "+"~customer_point['point'] %}
+                                    {% endif %}
+                                    <li>
+                                        <i class="{{ icon }}" style="width:40px;height:40px;font-size:11px;padding-top:5px;"><b>{{ point }}</b></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fa fa-clock-o"></i></span>
+                                            <h3 class="timeline-header">
+                                                <a href="#">
+                                                    {{ customer_point['created_at'].strftime('%d-%m-%Y %H:%M:%S') }} | {{ customer_point['info'] }}
+                                                </a>
+                                            </h3>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}
+{% block script %}
+	<script>
+		
+	</script>
+{% endblock script %}
