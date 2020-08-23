@@ -12,3 +12,5 @@ pip install -r requirements.txt
 You can see flask installation at [flask documentation](https://flask.palletsprojects.com/en/1.1.x/installation/)
 
 
+## Cleandata.py
+This file for cleaning raw data (i can't share any data because of confidential)
